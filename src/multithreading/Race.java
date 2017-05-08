@@ -1,5 +1,6 @@
 package multithreading;
 
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,7 +28,7 @@ public class Race {
             System.out.println("Get set... Go!");
             int rest = 0;
             for (int i = 0; i < RUNNERS; i++) {
-                Thread runner = new ThreadRunner(i+1, rest, rest+10);
+                Thread runner = new ThreadRunner(i+1, rest, rest+10, (int) (Math.random() * 100));
                 rest += 10;
                 executor.execute(runner);
             }

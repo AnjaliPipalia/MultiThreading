@@ -7,19 +7,38 @@ package multithreading;
  */
 class ThreadRunner extends Thread {
 
-    private int number, restValue, speed;
+    private int number, restValue, baseSpeed, clumsiness, tripCount = 0;
 
-    ThreadRunner(int number, int restValue, int speed) {
+    ThreadRunner(int number, int restValue, int speed, int clumsiness) {
         this.number = number;
         this.restValue = restValue;
-        this.speed = speed;
+        this.baseSpeed = speed;
+        this.clumsiness = clumsiness;
     }
 
     public void run() {
         int distance = 0;
+        int speed = baseSpeed;
         while (!isInterrupted() && distance < Race.DISTANCE) {
             try {
-                distance = runSync(distance);
+                int rand = (int) (Math.random() * 100);
+                if (tripCount == 0) {
+                    if (clumsiness <= rand) {
+                        speed = baseSpeed / 2;
+                        System.out.println("Thread " + number + " tripped. Speed reduced to " + speed);
+                        tripCount = 5;
+                    }
+                } else {
+                    tripCount--;
+                    if (tripCount == 0) {
+                        speed = baseSpeed;
+                    }
+                }
+                if (restValue <= rand) {
+                    distance += speed;
+                    System.out.println("Thread " + number + " : " + distance);
+                }
+                Thread.sleep(5);
             } catch (InterruptedException e) {
                 System.out.print("Thread " + number + " : You beat me fair and square." + "\n");
                 break;
@@ -28,16 +47,6 @@ class ThreadRunner extends Thread {
         if (distance >= Race.DISTANCE && !isInterrupted()) {
             Race.finished(Thread.currentThread(), this.number);
         }
-    }
-
-    private synchronized int runSync(int distance) throws InterruptedException {
-        int rand = (int) (Math.random() * 100);
-        if (restValue <= rand) {
-            distance += speed;
-            System.out.println("Thread " + number + " : " + distance);
-        }
-        Thread.sleep(100);
-        return distance;
     }
 
 }
