@@ -7,34 +7,37 @@ package multithreading;
  */
 class ThreadRunner extends Thread {
 
-    private String name;
-    private int restValue, speed;
+    private int number, restValue, speed;
 
-    ThreadRunner(String name, int restValue, int speed) {
-        this.name = name;
+    ThreadRunner(int number, int restValue, int speed) {
+        this.number = number;
         this.restValue = restValue;
         this.speed = speed;
     }
 
     public void run() {
         int distance = 0;
-        while (!isInterrupted() && distance < 1000) {
+        while (!isInterrupted() && distance < Race.DISTANCE) {
             try {
-                int rand = (int) (Math.random() * 100);
-                if (restValue <= rand) {
-                    distance += speed;
-                    System.out.println(name + " : " + distance);
-                }
-                Thread.sleep(100);
+                distance = runSync(distance);
             } catch (InterruptedException e) {
-                System.out.println(name + ": You beat me fair and square." + "\n");
+                System.out.print("Thread " + number + " : You beat me fair and square." + "\n");
                 break;
             }
         }
-        if (distance >= 1000) {
-            System.out.println(name + ": I finished!" + "\n");
-            Race.finished(Thread.currentThread(), name);
+        if (distance >= Race.DISTANCE && !isInterrupted()) {
+            Race.finished(Thread.currentThread(), this.number);
         }
+    }
+
+    private synchronized int runSync(int distance) throws InterruptedException {
+        int rand = (int) (Math.random() * 100);
+        if (restValue <= rand) {
+            distance += speed;
+            System.out.println("Thread " + number + " : " + distance);
+        }
+        Thread.sleep(100);
+        return distance;
     }
 
 }
