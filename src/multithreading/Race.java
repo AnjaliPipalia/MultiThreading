@@ -5,30 +5,47 @@ package multithreading;
  * @author arp226
  */
 public class Race {
-	public static Thread tortoise;
-	public static Thread hare;
+	static Thread tortoise;
+	static Thread hare;
+    static int winnerHare = 0;
+    static int winnerTortoise = 0;
+    final int RACES = 3;
 
 	public static void main(String[] args) {
+        new Race().start();
+    }
 
-		tortoise = new ThreadRunner("Tortoise", 0, 10);
-		hare = new ThreadRunner("Hare", 90, 100);
+    private void start() {
+        int raceNumber = 0;
+        while (raceNumber < RACES) {
+            tortoise = new ThreadRunner("Tortoise", 0, 10);
+            hare = new ThreadRunner("Hare", 90, 100);
+            if (!tortoise.isAlive() && !hare.isAlive()) {
+                System.out.println("Get set... Go!");
+                tortoise.start();
+                hare.start();
+            }
+            while(tortoise.isAlive() && hare.isAlive()) {
+            }
+            raceNumber++;
+        }
 
-		System.out.println("Get set... Go!");
-		tortoise.start();
-		hare.start();
+        System.out.println("T: " + winnerTortoise + " | H: " + winnerHare);
+    }
 
-	}
-
-	public static synchronized void finished(Thread winner, String winnerName) {
+    static synchronized void finished(Thread winner, String winnerName) {
 
 		if (winner.equals(hare)) {
 			System.out.println("The race is over! The Hare is the winner" + "\n");
-			tortoise.interrupt();
-		}
-		if (winner.equals(tortoise)) {
-			System.out.println("The race is over! The Tortoise is the winner" + "\n");
-			hare.interrupt();
-		}
-	}
+            winnerHare++;
+        }
+        if (winner.equals(tortoise)) {
+            System.out.println("The race is over! The Tortoise is the winner" + "\n");
+            winnerTortoise++;
+        }
+
+        tortoise.interrupt();
+        hare.interrupt();
+    }
 
 }
