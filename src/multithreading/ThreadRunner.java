@@ -38,7 +38,7 @@ class ThreadRunner extends Thread {
                     distance += speed;
                     System.out.println("Thread " + number + " : " + distance);
                 }
-                Thread.sleep(5);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.print("Thread " + number + " : You beat me fair and square." + "\n");
                 break;
